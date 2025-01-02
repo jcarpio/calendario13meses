@@ -44,17 +44,22 @@ export class CalendarioPage {
 
   // Generate the lunar calendar
   generarCalendario() {
-    let currentDate = new Date(this.startDate); // Starting point
+    let currentDate = new Date(this.startDate); // Start date
     let mayaDayNumber = 1; // Start with 1 (1 Batz)
     let nahualIndex = 10;  // Start with "Batz" (index 10)
 
     // Generate 13 lunar months
     for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+      console.log(`Generando Mes ${mesIndex}...`); // Debugging
+
       let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
       // Calculate days in the current lunar month
       const diasMes = this.calcularDiasEnMes(new Date(currentDate));
 
+      console.log(`Mes ${mesIndex} tiene ${diasMes} días.`); // Debugging
+
+      // Loop through each day in the month
       for (let j = 1; j <= diasMes; j++) {
         // Gregorian date
         const fecha = new Date(currentDate);
@@ -90,16 +95,29 @@ export class CalendarioPage {
       // Push completed month
       this.meses.push(mes);
 
-      // Move to the next new moon
+      // Move to the next lunar cycle
       currentDate = this.encontrarProximaLunaNueva(new Date(currentDate));
+      console.log(`Nueva fecha inicio para el siguiente mes: ${currentDate.toDateString()}`); // Debugging
     }
   }
 
   // Calculate days in the current lunar month
   calcularDiasEnMes(fecha: Date): number {
-    const nextLunaNueva = this.encontrarProximaLunaNueva(new Date(fecha));
-    const diasEnMes = Math.floor((nextLunaNueva.getTime() - fecha.getTime()) / (1000 * 60 * 60 * 24));
-    return diasEnMes;
+    let count = 0;
+    let tempDate = new Date(fecha);
+
+    // Count days until the next new moon
+    while (count < 30) { // Avoid infinite loops
+      if (this.esLunaNueva(tempDate)) {
+        console.log(`Luna nueva encontrada en ${count} días.`); // Debugging
+        return count > 0 ? count : 29; // Default to 29 if error
+      }
+      count++;
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
+
+    console.warn('No se encontró luna nueva en 30 días.');
+    return 29; // Default to 29 days if calculation fails
   }
 
   // Find next New Moon
