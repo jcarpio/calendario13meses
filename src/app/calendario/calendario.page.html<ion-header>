@@ -1,4 +1,3 @@
-<ion-header>
   <ion-toolbar>
     <ion-title>Calendario de 13 Meses</ion-title>
   </ion-toolbar>
@@ -15,10 +14,12 @@
             <ion-card-title>{{ dia.fecha }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
+            <!-- Gregorian date -->
+            <p>Gregoriano: {{ dia.gregoriana }}</p>
             <!-- Lunar phase with emoji -->
-            <p>Lunar Phase: {{ dia.fase }}</p>
+            <p>Fase Lunar: {{ dia.fase }}</p>
             <!-- Biodynamic data with emoji -->
-            <p>Biodynamic: {{ dia.tipo }}</p>
+            <p>Biodinámico: {{ dia.tipo }}</p>
             <!-- Maya data -->
             <p>Maya: {{ dia.nawal }}</p>
           </ion-card-content>
