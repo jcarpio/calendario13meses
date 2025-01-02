@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importar CommonModule para directivas como *ngFor
-import { IonicModule } from '@ionic/angular'; // Importar IonicModule para componentes de Ionic
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
-// Definir el tipo personalizado para los días
+// Definir tipos personalizados
 type Dia = {
   fecha: string;
   fase: string;
@@ -10,37 +10,85 @@ type Dia = {
   nawal: string;
 };
 
+// Datos simulados para calendario biodinámico
+const biodinamicoDatos = [
+  { fecha: '1/1', tipo: 'Raíz', emoji: '🌱' },
+  { fecha: '2/1', tipo: 'Hoja', emoji: '🌿' },
+  { fecha: '3/1', tipo: 'Flor', emoji: '🌸' },
+  { fecha: '4/1', tipo: 'Fruto', emoji: '🍎' },
+  { fecha: '5/1', tipo: 'No Favorable', emoji: '⛔' },
+];
+
+// Datos simulados para el calendario maya
+const mayaDatos = [
+  { fecha: '1/1', nawal: 'I’X' },
+  { fecha: '2/1', nawal: 'IMOX' },
+  { fecha: '3/1', nawal: 'KIEJ' },
+  { fecha: '4/1', nawal: 'KAN' },
+  { fecha: '5/1', nawal: 'KAME' },
+];
+
 @Component({
   selector: 'app-calendario',
-  standalone: true, // Componente standalone
-  imports: [CommonModule, IonicModule], // Importar módulos necesarios
+  standalone: true,
+  imports: [CommonModule, IonicModule],
   templateUrl: './calendario.page.html',
   styleUrls: ['./calendario.page.scss'],
 })
 export class CalendarioPage {
-  // Declarar la estructura de datos para los meses
-  meses: { nombre: string; dias: Dia[] }[] = []; // Lista de meses, cada uno con una lista de días tipo Dia
+  meses: { nombre: string; dias: Dia[] }[] = [];
 
   constructor() {
-    this.generarCalendario(); // Llamar a la función para crear el calendario
+    this.generarCalendario();
   }
 
-  // Método para generar el calendario de 13 meses con 28 días cada uno
   generarCalendario() {
     for (let i = 0; i < 13; i++) {
-      // Crear un mes con nombre y lista de días
-      let mes = { nombre: `Mes ${i + 1}`, dias: [] as Dia[] }; // Declarar explícitamente el tipo Dia[] en dias
+      let mes = { nombre: `Mes ${i + 1}`, dias: [] as Dia[] };
+
       for (let j = 1; j <= 28; j++) {
-        // Añadir cada día con datos predeterminados (se pueden modificar después)
+        // Obtener información biodinámica
+        const tipoDia = biodinamicoDatos.find((d) => d.fecha === `${j}/${i + 1}`);
+        const tipo = tipoDia ? `${tipoDia.emoji} ${tipoDia.tipo}` : 'Desconocido';
+
+        // Obtener información maya
+        const datoMaya = mayaDatos.find((d) => d.fecha === `${j}/${i + 1}`);
+        const nawal = datoMaya ? datoMaya.nawal : 'Desconocido';
+
+        // Calcular fase lunar
+        const { faseTexto, faseEmoji } = this.calcularFaseLunar(j, i + 1, 2025);
+
+        // Añadir día al mes
         mes.dias.push({
           fecha: `${j}/Mes ${i + 1}`,
-          fase: 'Luna Nueva', // Ejemplo de fase lunar (reemplazar con cálculo real más adelante)
-          tipo: 'Hoja', // Ejemplo de tipo biodinámico (personalizable después)
-          nawal: 'I’X', // Ejemplo de dato maya (se puede reemplazar con lógica dinámica)
+          fase: `${faseEmoji} ${faseTexto}`,
+          tipo: tipo,
+          nawal: nawal,
         });
       }
-      // Añadir el mes generado al array principal
+
       this.meses.push(mes);
     }
+  }
+
+  // Algoritmo mejorado para calcular la fase lunar
+  calcularFaseLunar(dia: number, mes: number, anio: number): { faseTexto: string; faseEmoji: string } {
+    const fecha = new Date(anio, mes - 1, dia);
+    const timestamp = fecha.getTime() / 1000 / 86400; // Días desde el 1 de enero de 1970
+    const epoch = 2444238.5; // Epoch juliana
+    const daysSinceNew = timestamp - epoch; // Días desde la última luna nueva
+    const lunarCycle = 29.53058867; // Duración de un ciclo lunar
+
+    const phase = ((daysSinceNew / lunarCycle) + 0.5) % 1; // Fase como porcentaje del ciclo lunar
+
+    // Determinar fase lunar y emoji
+    if (phase < 0.03 || phase > 0.97) return { faseTexto: 'Luna Nueva', faseEmoji: '🌑' };
+    if (phase < 0.22) return { faseTexto: 'Creciente', faseEmoji: '🌒' };
+    if (phase < 0.28) return { faseTexto: 'Cuarto Creciente', faseEmoji: '🌓' };
+    if (phase < 0.47) return { faseTexto: 'Gibosa Creciente', faseEmoji: '🌔' };
+    if (phase < 0.53) return { faseTexto: 'Luna Llena', faseEmoji: '🌕' };
+    if (phase < 0.72) return { faseTexto: 'Gibosa Menguante', faseEmoji: '🌖' };
+    if (phase < 0.78) return { faseTexto: 'Cuarto Menguante', faseEmoji: '🌗' };
+    return { faseTexto: 'Menguante', faseEmoji: '🌘' };
   }
 }
