@@ -393,6 +393,7 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
 };
 
 const fasesLunares2025 = [
+  { fecha: '2024-12-30', fase: 'Luna Nueva', emoji: '🌑' },
   { fecha: '2025-01-06', fase: 'Cuarto Creciente', emoji: '🌓' },
   { fecha: '2025-01-14', fase: 'Luna Llena', emoji: '🌕' },
   { fecha: '2025-01-21', fase: 'Cuarto Menguante', emoji: '🌗' },
