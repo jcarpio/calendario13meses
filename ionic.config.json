@@ -1,0 +1,7 @@
+{
+  "name": "calendario13meses",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
