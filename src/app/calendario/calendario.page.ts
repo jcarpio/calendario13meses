@@ -1,3 +1,4 @@
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -392,60 +393,40 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
   13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" }
 };
 
-const fasesLunares2025 = [
-  { fecha: '2024-12-30', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-01-06', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-01-14', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-01-21', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-01-29', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-02-05', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-02-13', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-02-19', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-02-27', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-03-06', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-03-14', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-03-21', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-03-29', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-04-05', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-04-13', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-04-19', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-04-27', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-05-04', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-05-12', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-05-19', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-05-27', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-06-03', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-06-11', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-06-17', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-06-25', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-07-02', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-07-10', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-07-17', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-07-25', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-08-01', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-08-09', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-08-16', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-08-24', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-08-31', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-09-07', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-09-14', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-09-22', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-09-29', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-10-07', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-10-14', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-10-22', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-10-29', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-11-05', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-11-12', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-11-20', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-11-27', fase: 'Cuarto Creciente', emoji: '🌓' },
-  { fecha: '2025-12-05', fase: 'Luna Llena', emoji: '🌕' },
-  { fecha: '2025-12-12', fase: 'Cuarto Menguante', emoji: '🌗' },
-  { fecha: '2025-12-20', fase: 'Luna Nueva', emoji: '🌑' },
-  { fecha: '2025-12-27', fase: 'Cuarto Creciente', emoji: '🌓' },
+// Lunar phases for 2025 (starting with 30/12/2024)
+const lunasNuevas = [
+  new Date(2024, 11, 30), // 30/12/2024
+  new Date(2025, 0, 29),  // 29/01/2025
+  new Date(2025, 1, 27),  // 27/02/2025
+  new Date(2025, 2, 29),  // 29/03/2025
+  new Date(2025, 3, 27),  // 27/04/2025
+  new Date(2025, 4, 27),  // 27/05/2025
+  new Date(2025, 5, 25),  // 25/06/2025
+  new Date(2025, 6, 25),  // 25/07/2025
+  new Date(2025, 7, 24),  // 24/08/2025
+  new Date(2025, 8, 22),  // 22/09/2025
+  new Date(2025, 9, 22),  // 22/10/2025
+  new Date(2025, 10, 20), // 20/11/2025
+  new Date(2025, 11, 20)  // 20/12/2025
 ];
 
-// Component
+// Numbers Information
+const numerosInfo: { [key: number]: NumeroInfo } = {
+  1: { fuerza: "Todo, Unidad, Absoluto" },
+  2: { fuerza: "Dualidad, Parejas, Cooperación" },
+  3: { fuerza: "Movimiento, Creatividad, Expansión" },
+  4: { fuerza: "Estabilidad, Base, Orden" },
+  5: { fuerza: "Acción, Libertad, Cambio" },
+  6: { fuerza: "Equilibrio, Justicia, Unión" },
+  7: { fuerza: "Reflexión, Análisis, Meditación" },
+  8: { fuerza: "Abundancia, Armonía, Poder Material" },
+  9: { fuerza: "Cierre, Finalización, Cumplimiento" },
+  10: { fuerza: "Manifestación, Liderazgo, Autoridad" },
+  11: { fuerza: "Desintegración, Liberación, Transformación" },
+  12: { fuerza: "Comprensión, Experiencia, Conocimiento Colectivo" },
+  13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" }
+};
+
 @Component({
   selector: 'app-calendario',
   standalone: true,
@@ -456,45 +437,53 @@ const fasesLunares2025 = [
 export class CalendarioPage {
   // Calendar data
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date('2025-01-06'); // Fecha fija para alinear fases lunares
+  startDate = lunasNuevas[0]; // Start with the first lunar phase
+  cicloLunar = 29.53; // Average lunar cycle in days
 
   constructor() {
     this.generarCalendario();
   }
 
-  // Generate the calendar
   generarCalendario() {
-    let currentDate = new Date(this.startDate); // Inicializa en la primera fecha conocida
-    let mayaDayNumber = 1;
-    let nahualIndex = 10;
+    let mayaDayNumber = 1; // Start with 1
+    let nahualIndex = 10;  // Start with "Batz" (index 10)
 
-    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+    // Generate 13 lunar months
+    for (let mesIndex = 0; mesIndex < 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex + 1}`, dias: [] as Dia[] };
 
-      // Ajusta los días del mes basados en las fases lunares reales
-      const diasMes = this.calcularDiasEnMes(currentDate, mesIndex);
+      // Set start and end dates for the current lunar month
+      const startDate = lunasNuevas[mesIndex];
+      const endDate = lunasNuevas[mesIndex + 1];
+      let currentDate = new Date(startDate);
 
-      for (let j = 0; j < diasMes; j++) {
+      // Loop through days until the next lunar phase
+      while (currentDate < endDate) {
         const fecha = new Date(currentDate);
         const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const tipoIndex = j % biodinamicoTipos.length;
+        const tipoIndex = mes.dias.length % biodinamicoTipos.length;
         const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
         const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
-        const { faseTexto, faseEmoji } = this.obtenerFaseLunar(currentDate);
-        const posicion = this.calcularPosicionLunar(currentDate);
+
+        const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
+
+        // Get Nawal and Number information
+        const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
         const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
 
+        // Add the day
         mes.dias.push({
-          fecha: `${j + 1}/Mes ${mesIndex}`,
-          gregoriana,
+          fecha: `${mes.dias.length + 1}/Mes ${mesIndex + 1}`,
+          gregoriana: gregoriana,
           fase: `${faseEmoji} ${faseTexto}`,
-          posicion,
-          tipo,
-          maya,
-          nawal: nawalesInfo[nahuales[nahualIndex]],
+          posicion: posicion,
+          tipo: tipo,
+          maya: maya,
+          nawal: infoNawal,
           numero: infoNumero,
         });
 
+        // Advance to the next day
         currentDate.setDate(currentDate.getDate() + 1);
         mayaDayNumber = (mayaDayNumber % 13) + 1;
         nahualIndex = (nahualIndex + 1) % 20;
@@ -504,19 +493,18 @@ export class CalendarioPage {
     }
   }
 
-  calcularDiasEnMes(fecha: Date, mesIndex: number): number {
-    // Alterna entre 29 y 30 días para mantener las fases lunares
-    return (mesIndex % 2 === 0) ? 29 : 30;
-  }
+  calcularFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string; posicion: string } {
+    const diasDesdeInicio = Math.floor(
+      (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
 
-  obtenerFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string } {
-    const fechaStr = fecha.toISOString().split('T')[0];
-    const fase = fasesLunares2025.find(f => f.fecha === fechaStr);
-    return fase ? { faseTexto: fase.fase, faseEmoji: fase.emoji } : { faseTexto: 'Desconocida', faseEmoji: '❓' };
-  }
+    const declinacion = Math.sin((diasDesdeInicio / this.cicloLunar) * 2 * Math.PI);
+    const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
 
-  calcularPosicionLunar(fecha: Date): string {
-    const declinacion = Math.sin(((fecha.getDate() / 29.53) * 2 * Math.PI));
-    return declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
+    if (fase < 0.03 || fase > 0.97) return { faseTexto: 'Luna Nueva', faseEmoji: '🌑', posicion };
+    if (fase < 0.22) return { faseTexto: 'Creciente', faseEmoji: '🌒', posicion };
+    if (fase < 0.53) return { faseTexto: 'Luna Llena', faseEmoji: '🌕', posicion };
+    return { faseTexto: 'Menguante', faseEmoji: '🌘', posicion };
   }
 }
