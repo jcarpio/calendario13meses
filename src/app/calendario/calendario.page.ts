@@ -461,9 +461,56 @@ export class CalendarioPage {
     }
   }
 
-  calcularFaseLunar(fecha: Date) {
-    return { faseTexto: "Luna Nueva", faseEmoji: "🌑", posicion: "Ascendente ⬆️" };
+calcularFaseLunar(fecha: Date): { 
+  faseTexto: string; 
+  faseEmoji: string; 
+  posicion: string; 
+} {
+  // Referencia para la primera luna nueva del ciclo
+  const primeraLunaNueva = new Date(2024, 11, 30); // 30/12/2024
+  const cicloLunar = 29.53; // Duración promedio del ciclo lunar en días
+
+  // Calculamos días transcurridos desde la primera luna nueva
+  const diasDesdeLunaNueva = (fecha.getTime() - primeraLunaNueva.getTime()) / (1000 * 60 * 60 * 24);
+  const fase = (diasDesdeLunaNueva % cicloLunar) / cicloLunar;
+
+  // Variables para almacenar fase lunar y emoji
+  let faseTexto = '';
+  let faseEmoji = '';
+
+  // Determinar la fase lunar
+  if (fase < 0.03 || fase > 0.97) {
+    faseTexto = 'Luna Nueva';
+    faseEmoji = '🌑';
+  } else if (fase < 0.22) {
+    faseTexto = 'Creciente';
+    faseEmoji = '🌒';
+  } else if (fase < 0.28) {
+    faseTexto = 'Cuarto Creciente';
+    faseEmoji = '🌓';
+  } else if (fase < 0.47) {
+    faseTexto = 'Gibosa Creciente';
+    faseEmoji = '🌔';
+  } else if (fase < 0.53) {
+    faseTexto = 'Luna Llena';
+    faseEmoji = '🌕';
+  } else if (fase < 0.72) {
+    faseTexto = 'Gibosa Menguante';
+    faseEmoji = '🌖';
+  } else if (fase < 0.78) {
+    faseTexto = 'Cuarto Menguante';
+    faseEmoji = '🌗';
+  } else {
+    faseTexto = 'Menguante';
+    faseEmoji = '🌘';
   }
+
+  // Determinar si la luna está ascendente o descendente
+  const declinacion = Math.sin((diasDesdeLunaNueva / cicloLunar) * 2 * Math.PI);
+  const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
+
+  return { faseTexto, faseEmoji, posicion };
+}
 
   calcularBiodinamico(fase: string): string {
     if (fase.includes('Nueva') || fase.includes('Creciente')) return '🌿 Hoja';
