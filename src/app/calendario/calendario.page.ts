@@ -83,6 +83,7 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
   12: { fuerza: "Comprensión, Experiencia, Conocimiento Colectivo" },
   13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" },
 };
+
 // Nawal Information
 const nawalesInfo: { [key: string]: NawalInfo } = {
   "Batz": {
@@ -408,7 +409,6 @@ const nawalesInfo: { [key: string]: NawalInfo } = {
 };
 
 
-
 @Component({
   selector: 'app-calendario',
   standalone: true,
@@ -418,113 +418,61 @@ const nawalesInfo: { [key: string]: NawalInfo } = {
 })
 export class CalendarioPage {
   meses: { nombre: string; dias: Dia[] }[] = [];
+  startDate = new Date(2024, 11, 30); // Primera luna nueva
 
   constructor() {
     this.generarCalendario();
   }
 
-generarCalendario() {
-  let currentDate = new Date(this.startDate); // Inicia el calendario en la primera luna nueva
-  let mayaDayNumber = 1; // Ciclo Maya comienza en 1
-  let nahualIndex = 10;  // Empieza en "Batz"
+  generarCalendario() {
+    let currentDate = new Date(this.startDate);
+    let mayaDayNumber = 1;
+    let nahualIndex = 10;
 
-  for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-    let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-    // Calcular los días en el mes (restamos 1 para excluir la última luna nueva)
-    const inicio = fasesLunares2025[mesIndex - 1];
-    const fin = fasesLunares2025[mesIndex];
-    const diasMes = Math.floor((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
+      // Calcular días entre lunas nuevas
+      const inicio = fasesLunares2025[mesIndex - 1];
+      const fin = fasesLunares2025[mesIndex];
+      const diasMes = Math.floor((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
 
-    // Generar los días del mes
-    for (let j = 1; j <= diasMes; j++) {
-      const fecha = new Date(currentDate);
-      const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-      const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(fecha);
-      const biodinamico = this.calcularBiodinamico(faseTexto);
+      for (let j = 0; j < diasMes; j++) { // Evita repetir días
+        const fecha = new Date(currentDate);
+        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(fecha);
+        const biodinamico = this.calcularBiodinamico(faseTexto);
 
-      mes.dias.push({
-        fecha: `${j}/Mes ${mesIndex}`,
-        gregoriana: gregoriana,
-        fase: `${faseEmoji} ${faseTexto}`,
-        posicion: posicion,
-        tipo: biodinamico,
-        biodinamico: biodinamico,
-        maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
-        nawal: nawalesInfo[nahuales[nahualIndex]],
-        numero: numerosInfo[mayaDayNumber],
-      });
+        mes.dias.push({
+          fecha: `${j + 1}/Mes ${mesIndex}`,
+          gregoriana: gregoriana,
+          fase: `${faseEmoji} ${faseTexto}`,
+          posicion: posicion,
+          tipo: biodinamico,
+          biodinamico: biodinamico,
+          maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
+          nawal: {} as NawalInfo,
+          numero: numerosInfo[mayaDayNumber],
+        });
 
-      // Avanzar un día
-      currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setDate(currentDate.getDate() + 1);
+        mayaDayNumber = (mayaDayNumber % 13) + 1;
+        nahualIndex = (nahualIndex + 1) % 20;
+      }
 
-      // Actualizar ciclos Mayas
-      mayaDayNumber = (mayaDayNumber % 13) + 1;
-      nahualIndex = (nahualIndex + 1) % 20;
+      this.meses.push(mes);
     }
-
-    this.meses.push(mes);
-
-    // Avanzar al día siguiente de la última luna nueva para empezar el próximo mes
-    currentDate = new Date(fin);
-    currentDate.setDate(currentDate.getDate() + 1); // Avanza al día siguiente
-  }
-}
-
-calcularFaseLunar(fecha: Date): { 
-  faseTexto: string; 
-  faseEmoji: string; 
-  posicion: string; 
-} {
-  // Referencia para la primera luna nueva del ciclo
-  const primeraLunaNueva = new Date(2024, 11, 30); // 30/12/2024
-  const cicloLunar = 29.53; // Duración promedio del ciclo lunar en días
-
-  // Calculamos días transcurridos desde la primera luna nueva
-  const diasDesdeLunaNueva = (fecha.getTime() - primeraLunaNueva.getTime()) / (1000 * 60 * 60 * 24);
-  const fase = (diasDesdeLunaNueva % cicloLunar) / cicloLunar;
-
-  // Variables para almacenar fase lunar y emoji
-  let faseTexto = '';
-  let faseEmoji = '';
-
-  // Determinar la fase lunar
-  if (fase < 0.03 || fase > 0.97) {
-    faseTexto = 'Luna Nueva';
-    faseEmoji = '🌑';
-  } else if (fase < 0.22) {
-    faseTexto = 'Creciente';
-    faseEmoji = '🌒';
-  } else if (fase < 0.28) {
-    faseTexto = 'Cuarto Creciente';
-    faseEmoji = '🌓';
-  } else if (fase < 0.47) {
-    faseTexto = 'Gibosa Creciente';
-    faseEmoji = '🌔';
-  } else if (fase < 0.53) {
-    faseTexto = 'Luna Llena';
-    faseEmoji = '🌕';
-  } else if (fase < 0.72) {
-    faseTexto = 'Gibosa Menguante';
-    faseEmoji = '🌖';
-  } else if (fase < 0.78) {
-    faseTexto = 'Cuarto Menguante';
-    faseEmoji = '🌗';
-  } else {
-    faseTexto = 'Menguante';
-    faseEmoji = '🌘';
   }
 
-  // Determinar si la luna está ascendente o descendente
-  const declinacion = Math.sin((diasDesdeLunaNueva / cicloLunar) * 2 * Math.PI);
-  const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
-
-  return { faseTexto, faseEmoji, posicion };
-}
+  calcularFaseLunar(fecha: Date) {
+    const cicloLunar = 29.53;
+    const diasDesdeLunaNueva = (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24);
+    const fase = (diasDesdeLunaNueva % cicloLunar) / cicloLunar;
+    const fases = ['🌑 Nueva', '🌒 Creciente', '🌓 Cuarto', '🌕 Llena', '🌗 Menguante'];
+    return { faseTexto: fases[Math.floor(fase * 5)], faseEmoji: fases[Math.floor(fase * 5)], posicion: 'Ascendente' };
+  }
 
   calcularBiodinamico(fase: string): string {
-    if (fase.includes('Nueva') || fase.includes('Creciente')) return '🌿 Hoja';
-    if (fase.includes('Llena')) return '🌸 Flor';
-    return '🌱 Raíz';
+    return fase.includes('Llena') ? '🌸 Flor' : '🌿 Hoja';
   }
 }
