@@ -19,6 +19,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": {
+              "main": "src/main.ts",
               "base": "www"
             },
             "index": "src/index.html",
