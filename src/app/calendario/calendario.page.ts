@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-// Define day structure
+// Day structure
 type Dia = {
   fecha: string;
   gregoriana: string;
@@ -21,8 +21,8 @@ const biodinamicoTipos = [
 
 // Maya Tzolk'in Nahuales
 const nahuales = [
-  'Imix', 'Ik', 'Akbal', 'Kan', 'Chicchan', 'Cimi', 'Manik', 'Lamat', 'Muluc', 'Oc',
-  'Chuen', 'Eb', 'Ben', 'Ix', 'Men', 'Cib', 'Caban', 'Etznab', 'Cauac', 'Ahau'
+  'Imox', 'Iq', 'Akabal', 'Kat', 'Kan', 'Keme', 'Kiej', 'Qanil', 'Toj', 'Tzi',
+  'Batz', 'E', 'Aj', 'Ix', 'Tzikin', 'Ajmaq', 'Noj', 'Tijax', 'Kawok', 'Ajpu'
 ];
 
 @Component({
@@ -45,8 +45,8 @@ export class CalendarioPage {
   // Generate the lunar calendar
   generarCalendario() {
     let currentDate = new Date(this.startDate); // Starting point
-    let mayaDayNumber = 4; // Start with 4 (from 4 Ix)
-    let nahualIndex = 13;  // Start with "Ix" (index 13)
+    let mayaDayNumber = 1; // Start with 1 (1 Batz)
+    let nahualIndex = 10;  // Start with "Batz" (index 10)
 
     // Generate 13 lunar months
     for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
