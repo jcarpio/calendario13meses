@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Calendario de 13 Meses</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row *ngFor="let mes of meses">
+      <ion-col *ngFor="let dia of mes.dias">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ dia.fecha }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>Fase Lunar: {{ dia.fase }}</p>
+            <p>Biodinámico: {{ dia.tipo }}</p>
+            <p>Maya: {{ dia.nawal }}</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

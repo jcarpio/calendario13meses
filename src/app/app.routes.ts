@@ -10,4 +10,8 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  {
+    path: 'calendario',
+    loadComponent: () => import('./calendario/calendario.page').then( m => m.CalendarioPage)
+  },
 ];
