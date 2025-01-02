@@ -33,19 +33,20 @@ const nahuales = [
   styleUrls: ['./calendario.page.scss'],
 })
 export class CalendarioPage {
+  // Calendar data
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date(2024, 11, 29); // Starting point
-  cicloLunar = 29.53; // Lunar cycle
+  startDate = new Date(2024, 11, 29); // Initial date (Dec 29, 2024)
+  cicloLunar = 29.53; // Average lunar cycle in days
 
   constructor() {
     this.generarCalendario();
   }
 
-  // Generate calendar based on lunar phases
+  // Generate the lunar calendar
   generarCalendario() {
-    let currentDate = new Date(this.startDate); // Start date
-    let mayaDayNumber = 1;
-    let nahualIndex = 0;
+    let currentDate = new Date(this.startDate); // Starting point
+    let mayaDayNumber = 4; // Start with 4 (from 4 Ix)
+    let nahualIndex = 13;  // Start with "Ix" (index 13)
 
     // Generate 13 lunar months
     for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
@@ -55,6 +56,7 @@ export class CalendarioPage {
       const diasMes = this.calcularDiasEnMes(new Date(currentDate));
 
       for (let j = 1; j <= diasMes; j++) {
+        // Gregorian date
         const fecha = new Date(currentDate);
         const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 
@@ -81,8 +83,8 @@ export class CalendarioPage {
         currentDate.setDate(currentDate.getDate() + 1);
 
         // Update Maya cycles
-        mayaDayNumber = (mayaDayNumber % 13) + 1;
-        nahualIndex = (nahualIndex + 1) % 20;
+        mayaDayNumber = (mayaDayNumber % 13) + 1; // Cycle through 1–13
+        nahualIndex = (nahualIndex + 1) % 20;     // Cycle through 20 nahuales
       }
 
       // Push completed month
