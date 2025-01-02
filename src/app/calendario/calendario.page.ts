@@ -410,49 +410,55 @@ export class CalendarioPage {
   }
 
   // Generate the lunar calendar
-  generarCalendario() {
-    let currentDate = new Date(this.startDate);
-    let mayaDayNumber = 1; 
-    let nahualIndex = 10;
+ generarCalendario() {
+  let currentDate = new Date(this.startDate); // Fecha de inicio.
+  let mayaDayNumber = 1; // Número Maya inicial.
+  let nahualIndex = 10;  // Índice inicial de Nahual.
 
-    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+  for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+    let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-      const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
+    // Calcular días en el mes según las fases lunares.
+    const diasMes = this.calcularDiasEnMes(new Date(currentDate));
 
-      for (let j = 1; j <= diasMes; j++) {
-        const fecha = new Date(currentDate);
-        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const tipoIndex = (j - 1) % biodinamicoTipos.length;
-        const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
-        const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
+    for (let j = 1; j <= diasMes; j++) {
+      const fecha = new Date(currentDate);
+      const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+      const tipoIndex = (j - 1) % biodinamicoTipos.length;
+      const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
+      const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
 
-        const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
+      const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
 
-        const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
-        const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
+      // Información del Nawal y Número.
+      const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
+      const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
 
-        mes.dias.push({
-          fecha: `${j}/Mes ${mesIndex}`,
-          gregoriana: gregoriana,
-          fase: `${faseEmoji} ${faseTexto}`,
-          posicion: posicion, // Corrected field
-          tipo: tipo,
-          maya: maya,
-          nawal: infoNawal,
-          numero: infoNumero,
-        });
+      mes.dias.push({
+        fecha: `${j}/Mes ${mesIndex}`,
+        gregoriana: gregoriana,
+        fase: `${faseEmoji} ${faseTexto}`,
+        posicion: posicion,
+        tipo: tipo,
+        maya: maya,
+        nawal: infoNawal,
+        numero: infoNumero,
+      });
 
-        currentDate.setDate(currentDate.getDate() + 1);
-        mayaDayNumber = (mayaDayNumber % 13) + 1;
-        nahualIndex = (nahualIndex + 1) % 20;
-      }
+      // Avanzar la fecha.
+      currentDate.setDate(currentDate.getDate() + 1);
 
-      this.meses.push(mes);
-      currentDate.setDate(currentDate.getDate() + (diasMes % 29 === 0 ? 1 : 0)); 
+      // Actualizar ciclos Mayas.
+      mayaDayNumber = (mayaDayNumber % 13) + 1;
+      nahualIndex = (nahualIndex + 1) % 20;
     }
-  }
 
+    this.meses.push(mes);
+
+    // **Avanzar a la siguiente Luna Nueva** como inicio del siguiente mes.
+    currentDate = this.encontrarProximaLunaNueva(new Date(currentDate));
+  }
+}
   // Calculate days in the current lunar month
  calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
     let count = 0; // Counter for days
