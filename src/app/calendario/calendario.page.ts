@@ -4,10 +4,11 @@ import { IonicModule } from '@ionic/angular';
 
 // Custom type for day structure
 type Dia = {
-  fecha: string; // Date in the calendar
-  fase: string;  // Lunar phase with emoji
-  tipo: string;  // Biodynamic type with emoji
-  nawal: string; // Maya information
+  fecha: string;            // Turtle calendar date (day/month)
+  gregoriana: string;       // Gregorian calendar date (dd/mm/yyyy)
+  fase: string;             // Lunar phase with emoji
+  tipo: string;             // Biodynamic type with emoji
+  nawal: string;            // Maya information
 };
 
 // Simulated data for biodynamic calendar
@@ -51,9 +52,11 @@ export class CalendarioPage {
 
       // Loop through 28 days per month
       for (let j = 1; j <= 28; j++) {
-        // Calculate the date for each day
+        // Calculate the Gregorian date
         const fecha = new Date(this.startDate);
         fecha.setDate(this.startDate.getDate() + (i * 28) + (j - 1));
+
+        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`; // Format dd/mm/yyyy
 
         // Get biodynamic information
         const tipoDia = biodinamicoDatos.find((d) => d.fecha === `${j}/${i + 1}`);
@@ -68,10 +71,11 @@ export class CalendarioPage {
 
         // Push the day to the month
         mes.dias.push({
-          fecha: `${j}/Mes ${i + 1}`,
-          fase: `${faseEmoji} ${faseTexto}`,
-          tipo: tipo,
-          nawal: nawal,
+          fecha: `${j}/Mes ${i + 1}`,      // Turtle calendar date
+          gregoriana: gregoriana,         // Gregorian calendar date
+          fase: `${faseEmoji} ${faseTexto}`, // Lunar phase with emoji
+          tipo: tipo,                     // Biodynamic data
+          nawal: nawal,                   // Maya data
         });
       }
 
