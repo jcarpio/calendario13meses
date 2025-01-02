@@ -1,10 +1,11 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+
+// Importación estática de los datos JSON
 import nawalesData from '../../assets/data/nawales.json';
 import numerosData from '../../assets/data/numeros.json';
 import fasesLunaresData from '../../assets/data/fases-lunares.json';
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 
 // Interfaces
 interface NawalInfo {
@@ -61,46 +62,32 @@ const nahuales = [
   templateUrl: './calendario.page.html',
   styleUrls: ['./calendario.page.scss'],
 })
-export class CalendarioPage {
+export class CalendarioPage implements OnInit {
   meses: { nombre: string; dias: Dia[] }[] = [];
   startDate = new Date(2024, 11, 30); // Primera luna nueva
 
   // Datos cargados desde JSON
-  nawalesInfo: { [key: string]: NawalInfo } = {};
-  numerosInfo: { [key: number]: NumeroInfo } = {};
-  fasesLunares2025: Date[] = [];
+  nawalesInfo: { [key: string]: NawalInfo } = nawalesData;
+  numerosInfo: { [key: number]: NumeroInfo } = numerosData;
+  fasesLunares: Date[] = fasesLunaresData.map((date: string) => new Date(date));
 
-  constructor(private http: HttpClient) {
-    this.cargarDatos();
-  }
+  constructor() {}
 
-  cargarDatos() {
-    // Cargar datos desde los JSON
-    this.http.get<{ [key: string]: NawalInfo }>('assets/data/nawales.json').subscribe(data => {
-      this.nawalesInfo = data; // Asigna directamente el objeto cargado desde el JSON
-    });
-
-    this.http.get<NumeroInfo[]>('assets/data/numeros.json').subscribe(data => {
-      this.numerosInfo = data.reduce((acc, item, index) => ({ ...acc, [index + 1]: item }), {});
-    });
-
-    this.http.get<string[]>('assets/data/fases-lunares.json').subscribe(data => {
-      this.fasesLunares2025 = data.map(fecha => new Date(fecha)); // Convertir a Date
-      this.generarCalendario(); // Generar el calendario después de cargar los datos
-    });
+  ngOnInit() {
+    this.generarCalendario();
   }
 
   generarCalendario() {
-    let currentDate = new Date(this.startDate); // Primera luna nueva
-    let mayaDayNumber = 1; // Ciclo Maya comienza en 1
-    let nahualIndex = 10;  // Empieza en "Batz"
+    let currentDate = new Date(this.startDate);
+    let mayaDayNumber = 1;
+    let nahualIndex = 10;
 
     for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
       let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-      // Calcular los días en el mes
-      const inicio = this.fasesLunares2025[mesIndex - 1];
-      const fin = this.fasesLunares2025[mesIndex];
+      // Calcular días entre lunas nuevas
+      const inicio = this.fasesLunares[mesIndex - 1];
+      const fin = this.fasesLunares[mesIndex];
       const diasMes = Math.floor((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
 
       for (let j = 0; j < diasMes; j++) { // Evita repetir días
@@ -109,8 +96,6 @@ export class CalendarioPage {
         const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(fecha);
         const biodinamico = this.calcularBiodinamico(faseTexto);
 
-        const nahualNombre = nahuales[nahualIndex]; // Obtener el nombre del nahual
-
         mes.dias.push({
           fecha: `${j + 1}/Mes ${mesIndex}`,
           gregoriana: gregoriana,
@@ -118,8 +103,8 @@ export class CalendarioPage {
           posicion: posicion,
           tipo: biodinamico,
           biodinamico: biodinamico,
-          maya: `${mayaDayNumber} ${nahualNombre}`,
-          nawal: this.nawalesInfo[nahualNombre], // Acceder al objeto directamente
+          maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
+          nawal: this.nawalesInfo[nahuales[nahualIndex]],
           numero: this.numerosInfo[mayaDayNumber],
         });
 
@@ -136,37 +121,14 @@ export class CalendarioPage {
     const cicloLunar = 29.53;
     const diasDesdeLunaNueva = (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24);
     const fase = (diasDesdeLunaNueva % cicloLunar) / cicloLunar;
+    const fases = ['🌑 Nueva', '🌒 Creciente', '🌓 Cuarto', '🌕 Llena', '🌗 Menguante'];
 
-    let faseTexto = '';
-    let faseEmoji = '';
-
-    if (fase < 0.03 || fase > 0.97) {
-      faseTexto = 'Luna Nueva';
-      faseEmoji = '🌑';
-    } else if (fase < 0.22) {
-      faseTexto = 'Creciente';
-      faseEmoji = '🌒';
-    } else if (fase < 0.28) {
-      faseTexto = 'Cuarto Creciente';
-      faseEmoji = '🌓';
-    } else if (fase < 0.47) {
-      faseTexto = 'Gibosa Creciente';
-      faseEmoji = '🌔';
-    } else if (fase < 0.53) {
-      faseTexto = 'Luna Llena';
-      faseEmoji = '🌕';
-    } else if (fase < 0.72) {
-      faseTexto = 'Gibosa Menguante';
-      faseEmoji = '🌖';
-    } else if (fase < 0.78) {
-      faseTexto = 'Cuarto Menguante';
-      faseEmoji = '🌗';
-    } else {
-      faseTexto = 'Menguante';
-      faseEmoji = '🌘';
-    }
-
-    return { faseTexto, faseEmoji, posicion: 'Ascendente ⬆️' };
+    const faseIndex = Math.floor(fase * 5);
+    return {
+      faseTexto: fases[faseIndex],
+      faseEmoji: fases[faseIndex],
+      posicion: faseIndex < 3 ? 'Ascendente ⬆️' : 'Descendente ⬇️',
+    };
   }
 
   calcularBiodinamico(fase: string): string {
