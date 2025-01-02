@@ -429,7 +429,7 @@ generarCalendario() {
       const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
       const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
 
-      const { faseTexto, faseEmoji } = this.calcularFaseLunar(currentDate);
+      const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
 
       // Get Nawal and Number information
       const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
@@ -439,6 +439,7 @@ generarCalendario() {
         fecha: `${j}/Mes ${mesIndex}`,
         gregoriana: gregoriana,
         fase: `${faseEmoji} ${faseTexto}`,
+        posicion: posicion,
         tipo: tipo,
         maya: maya,
         nawal: infoNawal,
