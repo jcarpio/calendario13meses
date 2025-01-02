@@ -376,23 +376,6 @@ const nawalesInfo: { [key: string]: NawalInfo } = {
   }
 };
 
-// Numbers Information
-const numerosInfo: { [key: number]: NumeroInfo } = {
-  1: { fuerza: "Todo, Unidad, Absoluto" },
-  2: { fuerza: "Dualidad, Parejas, Cooperación" },
-  3: { fuerza: "Movimiento, Creatividad, Expansión" },
-  4: { fuerza: "Estabilidad, Base, Orden" },
-  5: { fuerza: "Acción, Libertad, Cambio" },
-  6: { fuerza: "Equilibrio, Justicia, Unión" },
-  7: { fuerza: "Reflexión, Análisis, Meditación" },
-  8: { fuerza: "Abundancia, Armonía, Poder Material" },
-  9: { fuerza: "Cierre, Finalización, Cumplimiento" },
-  10: { fuerza: "Manifestación, Liderazgo, Autoridad" },
-  11: { fuerza: "Desintegración, Liberación, Transformación" },
-  12: { fuerza: "Comprensión, Experiencia, Conocimiento Colectivo" },
-  13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" }
-};
-
 // Lunar phases for 2025 (starting with 30/12/2024)
 const lunasNuevas = [
   new Date(2024, 11, 30), // 30/12/2024
