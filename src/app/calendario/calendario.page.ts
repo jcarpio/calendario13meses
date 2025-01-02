@@ -402,7 +402,7 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
 export class CalendarioPage {
   // Calendar data
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date(2024, 11, 29); // Initial date (Dec 29, 2024)
+  startDate = new Date(2024, 11, 28); // Initial date (Dec 28, 2024)
   cicloLunar = 29.53; // Average lunar cycle in days
 
   constructor() {
