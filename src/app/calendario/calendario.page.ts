@@ -408,54 +408,56 @@ export class CalendarioPage {
     this.generarCalendario();
   }
 
-  // Generate the lunar calendar
-  generarCalendario() {
-    let currentDate = new Date(this.startDate); // Start date
-    let mayaDayNumber = 1; // Start with 1 (1 Batz)
-    let nahualIndex = 10;  // Start with "Batz" (index 10)
+generarCalendario() {
+  let currentDate = new Date(this.startDate); // Start date
+  let mayaDayNumber = 1; // Start with 1 (1 Batz)
+  let nahualIndex = 10;  // Start with "Batz" (index 10)
 
-    // Generate 13 lunar months
-    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+  // Generate 13 lunar months
+  for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+    let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-      // Calculate days in the current lunar month
-      const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
+    // Calculate days in the current lunar month
+    const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
 
-      // Loop through each day in the month
-      for (let j = 1; j <= diasMes; j++) {
-        const fecha = new Date(currentDate);
-        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const tipoIndex = (j - 1) % biodinamicoTipos.length;
-        const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
-        const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
+    // Loop through each day in the month
+    for (let j = 1; j <= diasMes; j++) {
+      const fecha = new Date(currentDate);
+      const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+      const tipoIndex = (j - 1) % biodinamicoTipos.length;
+      const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
+      const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
 
-        const { faseTexto, faseEmoji } = this.calcularFaseLunar(currentDate);
+      const { faseTexto, faseEmoji } = this.calcularFaseLunar(currentDate);
 
-        // Get Nawal and Number information
-        const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
-        const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
+      // Get Nawal and Number information
+      const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
+      const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
 
-        mes.dias.push({
-          fecha: `${j}/Mes ${mesIndex}`,
-          gregoriana: gregoriana,
-          fase: `${faseEmoji} ${faseTexto}`,
-          tipo: tipo,
-          maya: maya,
-          nawal: infoNawal,
-          numero: infoNumero,
-        });
+      mes.dias.push({
+        fecha: `${j}/Mes ${mesIndex}`,
+        gregoriana: gregoriana,
+        fase: `${faseEmoji} ${faseTexto}`,
+        tipo: tipo,
+        maya: maya,
+        nawal: infoNawal,
+        numero: infoNumero,
+      });
 
-        currentDate = new Date(currentDate);
-        currentDate.setDate(currentDate.getDate() + 1); // Incrementa correctamente
+      // Increment the date
+      currentDate.setDate(currentDate.getDate() + 1);
 
-        mayaDayNumber = (mayaDayNumber % 13) + 1;
-        nahualIndex = (nahualIndex + 1) % 20;
-      }
-
-      this.meses.push(mes);
-      currentDate = this.encontrarProximaLunaNueva(new Date(currentDate));
+      // Update Maya cycles
+      mayaDayNumber = (mayaDayNumber % 13) + 1;
+      nahualIndex = (nahualIndex + 1) % 20;
     }
+
+    this.meses.push(mes);
+
+    // Increment date for next month instead of using encontrarProximaLunaNueva
+    currentDate.setDate(currentDate.getDate() + (diasMes % 29 === 0 ? 1 : 0)); // Add 1 day if needed
   }
+}
 
 calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
     let count = 0; // Counter for days
