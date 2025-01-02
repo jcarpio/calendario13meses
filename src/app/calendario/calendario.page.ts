@@ -419,7 +419,7 @@ export class CalendarioPage {
       let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
       // Calculate days in the current lunar month
-      const diasMes = this.calcularDiasEnMes(new Date(currentDate));
+      const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
 
       // Loop through each day in the month
       for (let j = 1; j <= diasMes; j++) {
@@ -445,7 +445,9 @@ export class CalendarioPage {
           numero: infoNumero,
         });
 
-        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + 1); // Incrementa correctamente
+
         mayaDayNumber = (mayaDayNumber % 13) + 1;
         nahualIndex = (nahualIndex + 1) % 20;
       }
@@ -455,18 +457,29 @@ export class CalendarioPage {
     }
   }
 
-  calcularDiasEnMes(fecha: Date): number {
-    let count = 0;
-    let tempDate = new Date(fecha);
+calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
+    let count = 0; // Counter for days
+    let tempDate = new Date(fecha); // Temporary date for calculations
 
-    while (count < 30) {
-      if (this.esLunaNueva(tempDate)) return count > 0 ? count : 29;
-      count++;
-      tempDate.setDate(tempDate.getDate() + 1);
+    // Alternate between 29 and 30 days to balance lunar cycles
+    const diasDelMes = mesIndex % 2 === 0 ? 29 : 30; // Even months: 29 days, odd months: 30 days
+    
+    // Loop to check for a new moon within the allowed days of the month
+    while (count < diasDelMes) {
+        // Check if the current date is a new moon
+        if (this.esLunaNueva(tempDate)) {
+            // Return the number of days counted or default to the month's limit
+            return count > 0 ? count : diasDelMes;
+        }
+
+        // Increment the counter and move to the next day
+        count++;
+        tempDate.setDate(tempDate.getDate() + 1);
     }
 
-    return 29;
-  }
+    // If no new moon is found, default to the predefined number of days
+    return diasDelMes;
+}
 
   encontrarProximaLunaNueva(fecha: Date): Date {
     let proximaFecha = new Date(fecha);
