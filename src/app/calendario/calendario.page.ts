@@ -423,43 +423,53 @@ export class CalendarioPage {
     this.generarCalendario();
   }
 
-  generarCalendario() {
-    let mayaDayNumber = 1;
-    let nahualIndex = 10;
+generarCalendario() {
+  let currentDate = new Date(this.startDate); // Inicia el calendario en la primera luna nueva
+  let mayaDayNumber = 1; // Ciclo Maya comienza en 1
+  let nahualIndex = 10;  // Empieza en "Batz"
 
-    for (let mesIndex = 0; mesIndex < 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex + 1}`, dias: [] as Dia[] };
+  for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+    let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-      const inicio = fasesLunares2025[mesIndex];
-      const fin = fasesLunares2025[mesIndex + 1] || new Date(2025, 11, 31); // Última fecha para mes 13
-      let currentDate = new Date(inicio);
+    // Calcular los días en el mes (restamos 1 para excluir la última luna nueva)
+    const inicio = fasesLunares2025[mesIndex - 1];
+    const fin = fasesLunares2025[mesIndex];
+    const diasMes = Math.floor((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
 
-      while (currentDate <= fin) {
-        const fecha = new Date(currentDate);
-        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
-        const biodinamico = this.calcularBiodinamico(faseTexto);
+    // Generar los días del mes
+    for (let j = 1; j <= diasMes; j++) {
+      const fecha = new Date(currentDate);
+      const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+      const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(fecha);
+      const biodinamico = this.calcularBiodinamico(faseTexto);
 
-        mes.dias.push({
-          fecha: `${mes.dias.length + 1}/Mes ${mesIndex + 1}`,
-          gregoriana: gregoriana,
-          fase: `${faseEmoji} ${faseTexto}`,
-          posicion: posicion,
-          tipo: biodinamico,
-          biodinamico: biodinamico,
-          maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
-          nawal: {} as NawalInfo,
-          numero: numerosInfo[mayaDayNumber],
-        });
+      mes.dias.push({
+        fecha: `${j}/Mes ${mesIndex}`,
+        gregoriana: gregoriana,
+        fase: `${faseEmoji} ${faseTexto}`,
+        posicion: posicion,
+        tipo: biodinamico,
+        biodinamico: biodinamico,
+        maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
+        nawal: nawalesInfo[nahuales[nahualIndex]],
+        numero: numerosInfo[mayaDayNumber],
+      });
 
-        currentDate.setDate(currentDate.getDate() + 1);
-        mayaDayNumber = (mayaDayNumber % 13) + 1;
-        nahualIndex = (nahualIndex + 1) % 20;
-      }
+      // Avanzar un día
+      currentDate.setDate(currentDate.getDate() + 1);
 
-      this.meses.push(mes);
+      // Actualizar ciclos Mayas
+      mayaDayNumber = (mayaDayNumber % 13) + 1;
+      nahualIndex = (nahualIndex + 1) % 20;
     }
+
+    this.meses.push(mes);
+
+    // Avanzar al día siguiente de la última luna nueva para empezar el próximo mes
+    currentDate = new Date(fin);
+    currentDate.setDate(currentDate.getDate() + 1); // Avanza al día siguiente
   }
+}
 
 calcularFaseLunar(fecha: Date): { 
   faseTexto: string; 
