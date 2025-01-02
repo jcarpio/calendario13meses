@@ -419,7 +419,7 @@ export class CalendarioPage {
     let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
     // Calcular días en el mes según las fases lunares.
-    const diasMes = this.calcularDiasEnMes(new Date(currentDate));
+    const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
 
     for (let j = 1; j <= diasMes; j++) {
       const fecha = new Date(currentDate);
