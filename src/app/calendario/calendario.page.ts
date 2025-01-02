@@ -496,15 +496,49 @@ calcularDiasEnMes(fecha: Date, mesIndex: number): number {
     return fase === 'Luna Nueva';
   }
 
-  calcularFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string } {
-    const diasDesdeInicio = Math.floor((fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
+calcularFaseLunar(fecha: Date): { 
+  faseTexto: string; 
+  faseEmoji: string; 
+  posicion: string; 
+} {
+  // Calculate days since the start date
+  const diasDesdeInicio = Math.floor(
+    (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
 
-    if (fase < 0.03 || fase > 0.97) return { faseTexto: 'Luna Nueva', faseEmoji: '🌑' };
-    if (fase < 0.22) return { faseTexto: 'Creciente', faseEmoji: '🌒' };
-    if (fase < 0.28) return { faseTexto: 'Cuarto Creciente', faseEmoji: '🌓' };
-    if (fase < 0.47) return { faseTexto: 'Gibosa Creciente', faseEmoji: '🌔' };
-    if (fase < 0.53) return { faseTexto: 'Luna Llena', faseEmoji: '🌕' };
-    return { faseTexto: 'Menguante', faseEmoji: '🌘' };
+  // Calculate the moon phase
+  let faseTexto = '';
+  let faseEmoji = '';
+  if (fase < 0.03 || fase > 0.97) {
+    faseTexto = 'Luna Nueva';
+    faseEmoji = '🌑';
+  } else if (fase < 0.22) {
+    faseTexto = 'Creciente';
+    faseEmoji = '🌒';
+  } else if (fase < 0.28) {
+    faseTexto = 'Cuarto Creciente';
+    faseEmoji = '🌓';
+  } else if (fase < 0.47) {
+    faseTexto = 'Gibosa Creciente';
+    faseEmoji = '🌔';
+  } else if (fase < 0.53) {
+    faseTexto = 'Luna Llena';
+    faseEmoji = '🌕';
+  } else if (fase < 0.72) {
+    faseTexto = 'Gibosa Menguante';
+    faseEmoji = '🌖';
+  } else if (fase < 0.78) {
+    faseTexto = 'Cuarto Menguante';
+    faseEmoji = '🌗';
+  } else {
+    faseTexto = 'Menguante';
+    faseEmoji = '🌘';
   }
+
+  // Calculate if the moon is ascending or descending
+  const declinacion = Math.sin((diasDesdeInicio / this.cicloLunar) * 2 * Math.PI);
+  const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
+
+  return { faseTexto, faseEmoji, posicion };
 }
