@@ -30,6 +30,7 @@ type Dia = {
   fecha: string;
   gregoriana: string;
   fase: string;
+  posicion: posicion,
   tipo: string;
   maya: string;
   nawal: NawalInfo; // Added Nawal info
