@@ -18,10 +18,20 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": {
+              "outputPath": "dist/calendario13meses",
+              "index": "src/index.html",
               "main": "src/main.ts",
-              "base": "www"
-            },
+              "polyfills": "src/polyfills.ts",
+              "tsConfig": "tsconfig.app.json",
+              "assets": [
+                 "src/favicon.ico",
+                 "src/assets"
+              ],
+              "styles": [
+                 "src/styles.css"
+              ],
+               "scripts": []
+            }
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
