@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -37,7 +36,7 @@ type Dia = {
   numero: NumeroInfo;
 };
 
-// Datos para el calendario
+// Datos para biodinámico
 const biodinamicoTipos = [
   { tipo: 'Raíz', emoji: '🌱' },
   { tipo: 'Hoja', emoji: '🌿' },
@@ -45,27 +44,45 @@ const biodinamicoTipos = [
   { tipo: 'Fruto', emoji: '🍎' },
 ];
 
+// Datos Nahuales
 const nahuales = [
   'Imox', 'Iq', 'Akabal', 'Kat', 'Kan', 'Keme', 'Kiej', 'Qanil', 'Toj', 'Tzi',
   'Batz', 'E', 'Aj', 'Ix', 'Tzikin', 'Ajmaq', 'Noj', 'Tijax', 'Kawok', 'Ajpu'
 ];
 
+// Fechas de lunas nuevas
 const fasesLunares2025 = [
   new Date(2024, 11, 30), // Luna Nueva inicial (30/12/2024)
-  new Date(2025, 0, 29),  // Luna Nueva
-  new Date(2025, 1, 27),  // Luna Nueva
-  new Date(2025, 2, 29),  // Luna Nueva
-  new Date(2025, 3, 27),  // Luna Nueva
-  new Date(2025, 4, 27),  // Luna Nueva
-  new Date(2025, 5, 25),  // Luna Nueva
-  new Date(2025, 6, 25),  // Luna Nueva
-  new Date(2025, 7, 24),  // Luna Nueva
-  new Date(2025, 8, 22),  // Luna Nueva
-  new Date(2025, 9, 22),  // Luna Nueva
-  new Date(2025, 10, 20), // Luna Nueva
-  new Date(2025, 11, 20), // Luna Nueva
+  new Date(2025, 0, 29),  // 29/01/2025
+  new Date(2025, 1, 27),  // 27/02/2025
+  new Date(2025, 2, 29),  // 29/03/2025
+  new Date(2025, 3, 27),  // 27/04/2025
+  new Date(2025, 4, 27),  // 27/05/2025
+  new Date(2025, 5, 25),  // 25/06/2025
+  new Date(2025, 6, 25),  // 25/07/2025
+  new Date(2025, 7, 24),  // 24/08/2025
+  new Date(2025, 8, 22),  // 22/09/2025
+  new Date(2025, 9, 22),  // 22/10/2025
+  new Date(2025, 10, 20), // 20/11/2025
+  new Date(2025, 11, 20)  // 20/12/2025
 ];
 
+// Información de Números
+const numerosInfo: { [key: number]: NumeroInfo } = {
+  1: { fuerza: "Todo, Unidad, Absoluto" },
+  2: { fuerza: "Dualidad, Parejas, Cooperación" },
+  3: { fuerza: "Movimiento, Creatividad, Expansión" },
+  4: { fuerza: "Estabilidad, Base, Orden" },
+  5: { fuerza: "Acción, Libertad, Cambio" },
+  6: { fuerza: "Equilibrio, Justicia, Unión" },
+  7: { fuerza: "Reflexión, Análisis, Meditación" },
+  8: { fuerza: "Abundancia, Armonía, Poder Material" },
+  9: { fuerza: "Cierre, Finalización, Cumplimiento" },
+  10: { fuerza: "Manifestación, Liderazgo, Autoridad" },
+  11: { fuerza: "Desintegración, Liberación, Transformación" },
+  12: { fuerza: "Comprensión, Experiencia, Conocimiento Colectivo" },
+  13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" },
+};
 // Nawal Information
 const nawalesInfo: { [key: string]: NawalInfo } = {
   "Batz": {
@@ -390,39 +407,7 @@ const nawalesInfo: { [key: string]: NawalInfo } = {
   }
 };
 
-// Lunar phases for 2025 (starting with 30/12/2024)
-const lunasNuevas = [
-  new Date(2024, 11, 30), // 30/12/2024
-  new Date(2025, 0, 29),  // 29/01/2025
-  new Date(2025, 1, 27),  // 27/02/2025
-  new Date(2025, 2, 29),  // 29/03/2025
-  new Date(2025, 3, 27),  // 27/04/2025
-  new Date(2025, 4, 27),  // 27/05/2025
-  new Date(2025, 5, 25),  // 25/06/2025
-  new Date(2025, 6, 25),  // 25/07/2025
-  new Date(2025, 7, 24),  // 24/08/2025
-  new Date(2025, 8, 22),  // 22/09/2025
-  new Date(2025, 9, 22),  // 22/10/2025
-  new Date(2025, 10, 20), // 20/11/2025
-  new Date(2025, 11, 20)  // 20/12/2025
-];
 
-// Numbers Information
-const numerosInfo: { [key: number]: NumeroInfo } = {
-  1: { fuerza: "Todo, Unidad, Absoluto" },
-  2: { fuerza: "Dualidad, Parejas, Cooperación" },
-  3: { fuerza: "Movimiento, Creatividad, Expansión" },
-  4: { fuerza: "Estabilidad, Base, Orden" },
-  5: { fuerza: "Acción, Libertad, Cambio" },
-  6: { fuerza: "Equilibrio, Justicia, Unión" },
-  7: { fuerza: "Reflexión, Análisis, Meditación" },
-  8: { fuerza: "Abundancia, Armonía, Poder Material" },
-  9: { fuerza: "Cierre, Finalización, Cumplimiento" },
-  10: { fuerza: "Manifestación, Liderazgo, Autoridad" },
-  11: { fuerza: "Desintegración, Liberación, Transformación" },
-  12: { fuerza: "Comprensión, Experiencia, Conocimiento Colectivo" },
-  13: { fuerza: "Trascendencia, Espiritualidad, Final Sagrado" }
-};
 
 @Component({
   selector: 'app-calendario',
@@ -433,37 +418,37 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
 })
 export class CalendarioPage {
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date(2024, 11, 30); // Luna Nueva inicial
 
   constructor() {
     this.generarCalendario();
   }
 
   generarCalendario() {
-    let currentDate = new Date(this.startDate);
     let mayaDayNumber = 1;
     let nahualIndex = 10;
 
-    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+    for (let mesIndex = 0; mesIndex < 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex + 1}`, dias: [] as Dia[] };
 
-      const diasMes = this.calcularDiasEnMes(currentDate, mesIndex);
+      const inicio = fasesLunares2025[mesIndex];
+      const fin = fasesLunares2025[mesIndex + 1] || new Date(2025, 11, 31); // Última fecha para mes 13
+      let currentDate = new Date(inicio);
 
-      for (let j = 1; j <= diasMes; j++) {
+      while (currentDate <= fin) {
         const fecha = new Date(currentDate);
         const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
         const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
         const biodinamico = this.calcularBiodinamico(faseTexto);
 
         mes.dias.push({
-          fecha: `${j}/Mes ${mesIndex}`,
+          fecha: `${mes.dias.length + 1}/Mes ${mesIndex + 1}`,
           gregoriana: gregoriana,
           fase: `${faseEmoji} ${faseTexto}`,
           posicion: posicion,
           tipo: biodinamico,
           biodinamico: biodinamico,
           maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
-          nawal: nawalesInfo[nahuales[nahualIndex]],
+          nawal: {} as NawalInfo,
           numero: numerosInfo[mayaDayNumber],
         });
 
@@ -471,15 +456,9 @@ export class CalendarioPage {
         mayaDayNumber = (mayaDayNumber % 13) + 1;
         nahualIndex = (nahualIndex + 1) % 20;
       }
-      this.meses.push(mes);
-      currentDate = new Date(fasesLunares2025[mesIndex]); // Ajuste para empezar en la luna nueva
-    }
-  }
 
-  calcularDiasEnMes(fecha: Date, mesIndex: number): number {
-    const inicio = fasesLunares2025[mesIndex - 1];
-    const fin = fasesLunares2025[mesIndex];
-    return (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24);
+      this.meses.push(mes);
+    }
   }
 
   calcularFaseLunar(fecha: Date) {
