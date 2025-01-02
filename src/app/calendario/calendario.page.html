@@ -1,28 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Calendario de 13 Meses</ion-title>
+    <ion-title>Calendario Lunar</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-grid>
-    <!-- Loop through each month -->
     <ion-row *ngFor="let mes of meses">
-      <!-- Loop through each day -->
+      <ion-col size="12">
+        <h2 style="text-align: center;">{{ mes.nombre }}</h2>
+      </ion-col>
       <ion-col *ngFor="let dia of mes.dias">
         <ion-card>
           <ion-card-header>
             <ion-card-title>{{ dia.fecha }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <!-- Gregorian date -->
-            <p>📅 Gregoriano: {{ dia.gregoriana }}</p>
-            <!-- Lunar phase with emoji -->
-            <p>Fase Lunar: {{ dia.fase }}</p>
-            <!-- Biodynamic data with emoji -->
-            <p>Biodinámico: {{ dia.tipo }}</p>
-            <!-- Maya data -->
-            <p>Maya: {{ dia.nawal }}</p>
+            <p>📅 Gregorian: {{ dia.gregoriana }}</p>
+            <p>Lunar Phase: {{ dia.fase }}</p>
+            <p>Biodynamic: {{ dia.tipo }}</p>
+            <p>Maya: {{ dia.maya }}</p>
           </ion-card-content>
         </ion-card>
       </ion-col>

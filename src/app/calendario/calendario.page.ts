@@ -2,31 +2,27 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-// Custom type for day structure
+// Define day structure
 type Dia = {
-  fecha: string;            // Turtle calendar date (day/month)
-  gregoriana: string;       // Gregorian calendar date (dd/mm/yyyy)
-  fase: string;             // Lunar phase with emoji
-  tipo: string;             // Biodynamic type with emoji
-  nawal: string;            // Maya information
+  fecha: string;
+  gregoriana: string;
+  fase: string;
+  tipo: string;
+  maya: string;
 };
 
-// Simulated data for biodynamic calendar
-const biodinamicoDatos = [
-  { fecha: '1/1', tipo: 'Raíz', emoji: '🌱' },
-  { fecha: '2/1', tipo: 'Hoja', emoji: '🌿' },
-  { fecha: '3/1', tipo: 'Flor', emoji: '🌸' },
-  { fecha: '4/1', tipo: 'Fruto', emoji: '🍎' },
-  { fecha: '5/1', tipo: 'No Favorable', emoji: '⛔' },
+// Biodynamic types
+const biodinamicoTipos = [
+  { tipo: 'Raíz', emoji: '🌱' },
+  { tipo: 'Hoja', emoji: '🌿' },
+  { tipo: 'Flor', emoji: '🌸' },
+  { tipo: 'Fruto', emoji: '🍎' },
 ];
 
-// Simulated data for the Maya calendar
-const mayaDatos = [
-  { fecha: '1/1', nawal: 'I’X' },
-  { fecha: '2/1', nawal: 'IMOX' },
-  { fecha: '3/1', nawal: 'KIEJ' },
-  { fecha: '4/1', nawal: 'KAN' },
-  { fecha: '5/1', nawal: 'KAME' },
+// Maya Tzolk'in Nahuales
+const nahuales = [
+  'Imix', 'Ik', 'Akbal', 'Kan', 'Chicchan', 'Cimi', 'Manik', 'Lamat', 'Muluc', 'Oc',
+  'Chuen', 'Eb', 'Ben', 'Ix', 'Men', 'Cib', 'Caban', 'Etznab', 'Cauac', 'Ahau'
 ];
 
 @Component({
@@ -37,59 +33,93 @@ const mayaDatos = [
   styleUrls: ['./calendario.page.scss'],
 })
 export class CalendarioPage {
-  // Main structure for months and days
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date(2024, 11, 29); // Start date for the lunar calendar (December 29, 2024)
+  startDate = new Date(2024, 11, 29); // Starting point
+  cicloLunar = 29.53; // Lunar cycle
 
   constructor() {
     this.generarCalendario();
   }
 
+  // Generate calendar based on lunar phases
   generarCalendario() {
-    // Loop through 13 months
-    for (let i = 0; i < 13; i++) {
-      let mes = { nombre: `Mes ${i + 1}`, dias: [] as Dia[] };
+    let currentDate = new Date(this.startDate); // Start date
+    let mayaDayNumber = 1;
+    let nahualIndex = 0;
 
-      // Loop through 28 days per month
-      for (let j = 1; j <= 28; j++) {
-        // Calculate the Gregorian date
-        const fecha = new Date(this.startDate);
-        fecha.setDate(this.startDate.getDate() + (i * 28) + (j - 1));
+    // Generate 13 lunar months
+    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`; // Format dd/mm/yyyy
+      // Calculate days in the current lunar month
+      const diasMes = this.calcularDiasEnMes(new Date(currentDate));
 
-        // Get biodynamic information
-        const tipoDia = biodinamicoDatos.find((d) => d.fecha === `${j}/${i + 1}`);
-        const tipo = tipoDia ? `${tipoDia.emoji} ${tipoDia.tipo}` : 'Desconocido';
+      for (let j = 1; j <= diasMes; j++) {
+        const fecha = new Date(currentDate);
+        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
 
-        // Get Maya information
-        const datoMaya = mayaDatos.find((d) => d.fecha === `${j}/${i + 1}`);
-        const nawal = datoMaya ? datoMaya.nawal : 'Desconocido';
+        // Biodynamic type
+        const tipoIndex = (j - 1) % biodinamicoTipos.length;
+        const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
 
-        // Calculate lunar phase
-        const { faseTexto, faseEmoji } = this.calcularFaseLunar(fecha);
+        // Maya Tzolk'in date
+        const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
 
-        // Push the day to the month
+        // Lunar phase
+        const { faseTexto, faseEmoji } = this.calcularFaseLunar(currentDate);
+
+        // Add the day
         mes.dias.push({
-          fecha: `${j}/Mes ${i + 1}`,      // Turtle calendar date
-          gregoriana: gregoriana,         // Gregorian calendar date
-          fase: `${faseEmoji} ${faseTexto}`, // Lunar phase with emoji
-          tipo: tipo,                     // Biodynamic data
-          nawal: nawal,                   // Maya data
+          fecha: `${j}/Mes ${mesIndex}`,
+          gregoriana: gregoriana,
+          fase: `${faseEmoji} ${faseTexto}`,
+          tipo: tipo,
+          maya: maya,
         });
+
+        // Advance date
+        currentDate.setDate(currentDate.getDate() + 1);
+
+        // Update Maya cycles
+        mayaDayNumber = (mayaDayNumber % 13) + 1;
+        nahualIndex = (nahualIndex + 1) % 20;
       }
 
+      // Push completed month
       this.meses.push(mes);
+
+      // Move to the next new moon
+      currentDate = this.encontrarProximaLunaNueva(new Date(currentDate));
     }
   }
 
-  // Calculate lunar phase based on date
-  calcularFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string } {
-    const cicloLunar = 29.53; // Lunar cycle in days
-    const diasDesdeInicio = Math.floor((fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)); // Days since start
-    const fase = (diasDesdeInicio % cicloLunar) / cicloLunar; // Phase as fraction of cycle
+  // Calculate days in the current lunar month
+  calcularDiasEnMes(fecha: Date): number {
+    const nextLunaNueva = this.encontrarProximaLunaNueva(new Date(fecha));
+    const diasEnMes = Math.floor((nextLunaNueva.getTime() - fecha.getTime()) / (1000 * 60 * 60 * 24));
+    return diasEnMes;
+  }
 
-    // Determine phase and emoji
+  // Find next New Moon
+  encontrarProximaLunaNueva(fecha: Date): Date {
+    let proximaFecha = new Date(fecha);
+    do {
+      proximaFecha.setDate(proximaFecha.getDate() + 1);
+    } while (!this.esLunaNueva(proximaFecha));
+    return proximaFecha;
+  }
+
+  // Check if the date is a New Moon
+  esLunaNueva(fecha: Date): boolean {
+    const fase = this.calcularFaseLunar(fecha).faseTexto;
+    return fase === 'Luna Nueva';
+  }
+
+  // Calculate lunar phase
+  calcularFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string } {
+    const diasDesdeInicio = Math.floor((fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
+
     if (fase < 0.03 || fase > 0.97) return { faseTexto: 'Luna Nueva', faseEmoji: '🌑' };
     if (fase < 0.22) return { faseTexto: 'Creciente', faseEmoji: '🌒' };
     if (fase < 0.28) return { faseTexto: 'Cuarto Creciente', faseEmoji: '🌓' };
