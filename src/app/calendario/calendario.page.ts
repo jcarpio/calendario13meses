@@ -444,6 +444,7 @@ const fasesLunares2025 = [
   { fecha: '2025-12-27', fase: 'Cuarto Creciente', emoji: '🌓' },
 ];
 
+// Component
 @Component({
   selector: 'app-calendario',
   standalone: true,
@@ -454,7 +455,7 @@ const fasesLunares2025 = [
 export class CalendarioPage {
   // Calendar data
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = new Date(2025, 0, 6); // Primera fase lunar en 2025 (Cuarto Creciente)
+  startDate = new Date('2025-01-06'); // Fecha fija para alinear fases lunares
 
   constructor() {
     this.generarCalendario();
@@ -462,18 +463,20 @@ export class CalendarioPage {
 
   // Generate the calendar
   generarCalendario() {
-    let currentDate = new Date(this.startDate);
+    let currentDate = new Date(this.startDate); // Inicializa en la primera fecha conocida
     let mayaDayNumber = 1;
     let nahualIndex = 10;
 
     for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
       let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
-      let diasMes = this.calcularDiasEnMes(currentDate);
 
-      for (let j = 1; j <= diasMes; j++) {
+      // Ajusta los días del mes basados en las fases lunares reales
+      const diasMes = this.calcularDiasEnMes(currentDate, mesIndex);
+
+      for (let j = 0; j < diasMes; j++) {
         const fecha = new Date(currentDate);
         const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const tipoIndex = (j - 1) % biodinamicoTipos.length;
+        const tipoIndex = j % biodinamicoTipos.length;
         const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
         const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
         const { faseTexto, faseEmoji } = this.obtenerFaseLunar(currentDate);
@@ -481,7 +484,7 @@ export class CalendarioPage {
         const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
 
         mes.dias.push({
-          fecha: `${j}/Mes ${mesIndex}`,
+          fecha: `${j + 1}/Mes ${mesIndex}`,
           gregoriana,
           fase: `${faseEmoji} ${faseTexto}`,
           posicion,
@@ -500,21 +503,19 @@ export class CalendarioPage {
     }
   }
 
-  // Obtener la fase lunar basada en las fechas reales
+  calcularDiasEnMes(fecha: Date, mesIndex: number): number {
+    // Alterna entre 29 y 30 días para mantener las fases lunares
+    return (mesIndex % 2 === 0) ? 29 : 30;
+  }
+
   obtenerFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string } {
     const fechaStr = fecha.toISOString().split('T')[0];
     const fase = fasesLunares2025.find(f => f.fecha === fechaStr);
     return fase ? { faseTexto: fase.fase, faseEmoji: fase.emoji } : { faseTexto: 'Desconocida', faseEmoji: '❓' };
   }
 
-  // Determina si la luna es ascendente o descendente
   calcularPosicionLunar(fecha: Date): string {
     const declinacion = Math.sin(((fecha.getDate() / 29.53) * 2 * Math.PI));
     return declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
-  }
-
-  // Calcular días en un mes lunar
-  calcularDiasEnMes(fecha: Date): number {
-    return 29 + ((fecha.getMonth() % 2 === 0) ? 1 : 0);
   }
 }
