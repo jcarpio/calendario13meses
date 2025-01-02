@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
-// Interface for Nawal Information
+// Interfaces
 interface NawalInfo {
   nombre: string;
   significado: string;
@@ -21,24 +21,23 @@ interface NawalInfo {
   metal: string;
 }
 
-// Interface for Number Information
 interface NumeroInfo {
   fuerza: string;
 }
 
-// Day structure
 type Dia = {
   fecha: string;
   gregoriana: string;
   fase: string;
   posicion: string;
   tipo: string;
+  biodinamico: string;
   maya: string;
   nawal: NawalInfo;
   numero: NumeroInfo;
 };
 
-// Biodynamic types
+// Datos para el calendario
 const biodinamicoTipos = [
   { tipo: 'Raíz', emoji: '🌱' },
   { tipo: 'Hoja', emoji: '🌿' },
@@ -46,10 +45,25 @@ const biodinamicoTipos = [
   { tipo: 'Fruto', emoji: '🍎' },
 ];
 
-// Maya Tzolk'in Nahuales
 const nahuales = [
   'Imox', 'Iq', 'Akabal', 'Kat', 'Kan', 'Keme', 'Kiej', 'Qanil', 'Toj', 'Tzi',
   'Batz', 'E', 'Aj', 'Ix', 'Tzikin', 'Ajmaq', 'Noj', 'Tijax', 'Kawok', 'Ajpu'
+];
+
+const fasesLunares2025 = [
+  new Date(2024, 11, 30), // Luna Nueva inicial (30/12/2024)
+  new Date(2025, 0, 29),  // Luna Nueva
+  new Date(2025, 1, 27),  // Luna Nueva
+  new Date(2025, 2, 29),  // Luna Nueva
+  new Date(2025, 3, 27),  // Luna Nueva
+  new Date(2025, 4, 27),  // Luna Nueva
+  new Date(2025, 5, 25),  // Luna Nueva
+  new Date(2025, 6, 25),  // Luna Nueva
+  new Date(2025, 7, 24),  // Luna Nueva
+  new Date(2025, 8, 22),  // Luna Nueva
+  new Date(2025, 9, 22),  // Luna Nueva
+  new Date(2025, 10, 20), // Luna Nueva
+  new Date(2025, 11, 20), // Luna Nueva
 ];
 
 // Nawal Information
@@ -418,76 +432,63 @@ const numerosInfo: { [key: number]: NumeroInfo } = {
   styleUrls: ['./calendario.page.scss'],
 })
 export class CalendarioPage {
-  // Calendar data
   meses: { nombre: string; dias: Dia[] }[] = [];
-  startDate = lunasNuevas[0]; // Start with the first lunar phase
-  cicloLunar = 29.53; // Average lunar cycle in days
+  startDate = new Date(2024, 11, 30); // Luna Nueva inicial
 
   constructor() {
     this.generarCalendario();
   }
 
   generarCalendario() {
-    let mayaDayNumber = 1; // Start with 1
-    let nahualIndex = 10;  // Start with "Batz" (index 10)
+    let currentDate = new Date(this.startDate);
+    let mayaDayNumber = 1;
+    let nahualIndex = 10;
 
-    // Generate 13 lunar months
-    for (let mesIndex = 0; mesIndex < 13; mesIndex++) {
-      let mes = { nombre: `Mes ${mesIndex + 1}`, dias: [] as Dia[] };
+    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-      // Set start and end dates for the current lunar month
-      const startDate = lunasNuevas[mesIndex];
-      const endDate = lunasNuevas[mesIndex + 1];
-      let currentDate = new Date(startDate);
+      const diasMes = this.calcularDiasEnMes(currentDate, mesIndex);
 
-      // Loop through days until the next lunar phase
-      while (currentDate < endDate) {
+      for (let j = 1; j <= diasMes; j++) {
         const fecha = new Date(currentDate);
         const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-        const tipoIndex = mes.dias.length % biodinamicoTipos.length;
-        const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
-        const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
-
         const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
+        const biodinamico = this.calcularBiodinamico(faseTexto);
 
-        // Get Nawal and Number information
-        const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
-        const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
-
-        // Add the day
         mes.dias.push({
-          fecha: `${mes.dias.length + 1}/Mes ${mesIndex + 1}`,
+          fecha: `${j}/Mes ${mesIndex}`,
           gregoriana: gregoriana,
           fase: `${faseEmoji} ${faseTexto}`,
           posicion: posicion,
-          tipo: tipo,
-          maya: maya,
-          nawal: infoNawal,
-          numero: infoNumero,
+          tipo: biodinamico,
+          biodinamico: biodinamico,
+          maya: `${mayaDayNumber} ${nahuales[nahualIndex]}`,
+          nawal: nawalesInfo[nahuales[nahualIndex]],
+          numero: numerosInfo[mayaDayNumber],
         });
 
-        // Advance to the next day
         currentDate.setDate(currentDate.getDate() + 1);
         mayaDayNumber = (mayaDayNumber % 13) + 1;
         nahualIndex = (nahualIndex + 1) % 20;
       }
-
       this.meses.push(mes);
+      currentDate = new Date(fasesLunares2025[mesIndex]); // Ajuste para empezar en la luna nueva
     }
   }
 
-  calcularFaseLunar(fecha: Date): { faseTexto: string; faseEmoji: string; posicion: string } {
-    const diasDesdeInicio = Math.floor(
-      (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
+  calcularDiasEnMes(fecha: Date, mesIndex: number): number {
+    const inicio = fasesLunares2025[mesIndex - 1];
+    const fin = fasesLunares2025[mesIndex];
+    return (fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24);
+  }
 
-    const declinacion = Math.sin((diasDesdeInicio / this.cicloLunar) * 2 * Math.PI);
-    const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
+  calcularFaseLunar(fecha: Date) {
+    return { faseTexto: "Luna Nueva", faseEmoji: "🌑", posicion: "Ascendente ⬆️" };
+  }
 
-    if (fase < 0.03 || fase > 0.97) return { faseTexto: 'Luna Nueva', faseEmoji: '🌑', posicion };
-    if (fase < 0.22) return { faseTexto: 'Creciente', faseEmoji: '🌒', posicion };
-    if (fase < 0.53) return { faseTexto: 'Luna Llena', faseEmoji: '🌕', posicion };
-    return { faseTexto: 'Menguante', faseEmoji: '🌘', posicion };
+  calcularBiodinamico(fase: string): string {
+    if (fase.includes('Nueva') || fase.includes('Creciente')) return '🌿 Hoja';
+    if (fase.includes('Llena')) return '🌸 Flor';
+    return '🌱 Raíz';
   }
 }
