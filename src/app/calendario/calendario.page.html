@@ -1,25 +1,58 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Calendario Lunar</ion-title>
+    <ion-title>Calendario Lunar y Maya</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <!-- Grid structure for displaying months -->
   <ion-grid>
+    <!-- Loop through each month -->
     <ion-row *ngFor="let mes of meses">
+      <!-- Display the month name -->
       <ion-col size="12">
         <h2 style="text-align: center;">{{ mes.nombre }}</h2>
       </ion-col>
-      <ion-col *ngFor="let dia of mes.dias">
+
+      <!-- Loop through each day -->
+      <ion-col *ngFor="let dia of mes.dias" size="12" size-md="4" size-lg="3">
         <ion-card>
+          <!-- Day header -->
           <ion-card-header>
             <ion-card-title>{{ dia.fecha }}</ion-card-title>
           </ion-card-header>
+
+          <!-- General information -->
           <ion-card-content>
-            <p>📅 Gregorian: {{ dia.gregoriana }}</p>
-            <p>Lunar Phase: {{ dia.fase }}</p>
-            <p>Biodynamic: {{ dia.tipo }}</p>
-            <p>Maya: {{ dia.maya }}</p>
+            <p>📅 <strong>Gregorian:</strong> {{ dia.gregoriana }}</p>
+            <p>🌙 <strong>Lunar Phase:</strong> {{ dia.fase }}</p>
+            <p>🌿 <strong>Biodynamic:</strong> {{ dia.tipo }}</p>
+            <p>🌿 <strong>Maya:</strong> {{ dia.maya }}</p>
+          </ion-card-content>
+
+          <!-- Nawal Information -->
+          <ion-card-content>
+            <h3>🌟 <strong>Nawal Information:</strong></h3>
+            <p><strong>Name:</strong> {{ dia.nawal.nombre }}</p>
+            <p><strong>Meaning:</strong> {{ dia.nawal.significado }}</p>
+            <p><strong>K'iche' Name:</strong> {{ dia.nawal.nombreKiche }}</p>
+            <p><strong>Yucateco Name:</strong> {{ dia.nawal.nombreYucateco }}</p>
+            <p><strong>Mexica Name:</strong> {{ dia.nawal.nombreMexica }}</p>
+            <p><strong>Polarity:</strong> {{ dia.nawal.polaridad }}</p>
+            <p><strong>Element:</strong> {{ dia.nawal.elemento }}</p>
+            <p><strong>Body:</strong> {{ dia.nawal.cuerpo }}</p>
+            <p><strong>Animal:</strong> {{ dia.nawal.nawalAnimal }}</p>
+            <p><strong>Energy Places:</strong> {{ dia.nawal.lugaresEnergeticos }}</p>
+            <p><strong>Body Parts:</strong> {{ dia.nawal.partesCuerpo }}</p>
+            <p><strong>Colors:</strong> {{ dia.nawal.coloresEnergeticos }}</p>
+            <p><strong>Stone:</strong> {{ dia.nawal.piedra }}</p>
+            <p><strong>Metal:</strong> {{ dia.nawal.metal }}</p>
+          </ion-card-content>
+
+          <!-- Number Information -->
+          <ion-card-content>
+            <h3>🔢 <strong>Number Information:</strong></h3>
+            <p><strong>Force:</strong> {{ dia.numero.fuerza }}</p>
           </ion-card-content>
         </ion-card>
       </ion-col>
