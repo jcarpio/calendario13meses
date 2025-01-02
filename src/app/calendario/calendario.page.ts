@@ -454,27 +454,31 @@ export class CalendarioPage {
   }
 
   // Calculate days in the current lunar month
-  calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
+ calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
     let count = 0; // Counter for days
     let tempDate = new Date(fecha); // Temporary date for calculations
 
-    // Incremento para ajustar el desfase de 0.53 días por ciclo lunar
-    let diasDelMes = mesIndex % 2 === 0 ? 29 : 30; // Alterna entre 29 y 30 días
-    let desfase = 0.53 * mesIndex; // Ajusta el desfase acumulado
+    // Alterna entre 29 y 30 días para ajustar los ciclos lunares
+    let diasDelMes = mesIndex % 2 === 0 ? 29 : 30; // Meses pares: 29 días, impares: 30 días
 
-    // Añade días extra si el desfase acumulado supera 1 día
-    diasDelMes += Math.floor(desfase);
+    // Ajuste acumulado del desfase lunar
+    const desfase = (mesIndex * 0.53) % 1; // Solo guarda la fracción decimal (entre 0 y 1)
 
-    // Buscar la próxima luna nueva para calcular los días exactos
+    // Si el desfase acumulado supera 0.5, añade un día
+    if (desfase > 0.5) {
+        diasDelMes += 1;
+    }
+
+    // Buscar luna nueva para validar días del mes
     while (count < diasDelMes) {
         if (this.esLunaNueva(tempDate)) {
             return count > 0 ? count : diasDelMes; // Devuelve los días calculados
         }
         count++;
-        tempDate.setDate(tempDate.getDate() + 1); // Incrementa un día
+        tempDate.setDate(tempDate.getDate() + 1); // Avanza un día
     }
 
-    return diasDelMes; // Devuelve los días predefinidos si no encuentra luna nueva
+    return diasDelMes; // Devuelve los días predeterminados
 }
 
   encontrarProximaLunaNueva(fecha: Date): Date {
