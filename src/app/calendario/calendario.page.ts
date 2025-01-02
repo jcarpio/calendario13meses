@@ -30,11 +30,11 @@ type Dia = {
   fecha: string;
   gregoriana: string;
   fase: string;
-  posicion: posicion;
+  posicion: string; // Fixed: Defined as string
   tipo: string;
   maya: string;
-  nawal: NawalInfo; // Added Nawal info
-  numero: NumeroInfo; // Added Number info
+  nawal: NawalInfo; 
+  numero: NumeroInfo; 
 };
 
 // Biodynamic types
@@ -409,81 +409,66 @@ export class CalendarioPage {
     this.generarCalendario();
   }
 
-generarCalendario() {
-  let currentDate = new Date(this.startDate); // Start date
-  let mayaDayNumber = 1; // Start with 1 (1 Batz)
-  let nahualIndex = 10;  // Start with "Batz" (index 10)
+  // Generate the lunar calendar
+  generarCalendario() {
+    let currentDate = new Date(this.startDate);
+    let mayaDayNumber = 1; 
+    let nahualIndex = 10;
 
-  // Generate 13 lunar months
-  for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
-    let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
+    for (let mesIndex = 1; mesIndex <= 13; mesIndex++) {
+      let mes = { nombre: `Mes ${mesIndex}`, dias: [] as Dia[] };
 
-    // Calculate days in the current lunar month
-    const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
+      const diasMes = this.calcularDiasEnMes(new Date(currentDate), mesIndex);
 
-    // Loop through each day in the month
-    for (let j = 1; j <= diasMes; j++) {
-      const fecha = new Date(currentDate);
-      const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-      const tipoIndex = (j - 1) % biodinamicoTipos.length;
-      const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
-      const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
+      for (let j = 1; j <= diasMes; j++) {
+        const fecha = new Date(currentDate);
+        const gregoriana = `${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
+        const tipoIndex = (j - 1) % biodinamicoTipos.length;
+        const tipo = `${biodinamicoTipos[tipoIndex].emoji} ${biodinamicoTipos[tipoIndex].tipo}`;
+        const maya = `${mayaDayNumber} ${nahuales[nahualIndex]}`;
 
-      const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
+        const { faseTexto, faseEmoji, posicion } = this.calcularFaseLunar(currentDate);
 
-      // Get Nawal and Number information
-      const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
-      const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
+        const infoNawal = nawalesInfo[nahuales[nahualIndex]] || {};
+        const infoNumero = numerosInfo[mayaDayNumber] || { fuerza: '' };
 
-      mes.dias.push({
-        fecha: `${j}/Mes ${mesIndex}`,
-        gregoriana: gregoriana,
-        fase: `${faseEmoji} ${faseTexto}`,
-        posicion: posicion,
-        tipo: tipo,
-        maya: maya,
-        nawal: infoNawal,
-        numero: infoNumero,
-      });
+        mes.dias.push({
+          fecha: `${j}/Mes ${mesIndex}`,
+          gregoriana: gregoriana,
+          fase: `${faseEmoji} ${faseTexto}`,
+          posicion: posicion, // Corrected field
+          tipo: tipo,
+          maya: maya,
+          nawal: infoNawal,
+          numero: infoNumero,
+        });
 
-      // Increment the date
-      currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setDate(currentDate.getDate() + 1);
+        mayaDayNumber = (mayaDayNumber % 13) + 1;
+        nahualIndex = (nahualIndex + 1) % 20;
+      }
 
-      // Update Maya cycles
-      mayaDayNumber = (mayaDayNumber % 13) + 1;
-      nahualIndex = (nahualIndex + 1) % 20;
+      this.meses.push(mes);
+      currentDate.setDate(currentDate.getDate() + (diasMes % 29 === 0 ? 1 : 0)); 
     }
-
-    this.meses.push(mes);
-
-    // Increment date for next month instead of using encontrarProximaLunaNueva
-    currentDate.setDate(currentDate.getDate() + (diasMes % 29 === 0 ? 1 : 0)); // Add 1 day if needed
   }
-}
 
-calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
-    let count = 0; // Counter for days
-    let tempDate = new Date(fecha); // Temporary date for calculations
-
-    // Alternate between 29 and 30 days to balance lunar cycles
-    const diasDelMes = mesIndex % 2 === 0 ? 29 : 30; // Even months: 29 days, odd months: 30 days
+  // Calculate days in the current lunar month
+  calcularDiasEnMes(fecha: Date, mesIndex: number): number {   
+    let count = 0;
+    let tempDate = new Date(fecha);
+    const diasDelMes = mesIndex % 2 === 0 ? 29 : 30; 
     
-    // Loop to check for a new moon within the allowed days of the month
     while (count < diasDelMes) {
-        // Check if the current date is a new moon
         if (this.esLunaNueva(tempDate)) {
-            // Return the number of days counted or default to the month's limit
             return count > 0 ? count : diasDelMes;
         }
-
-        // Increment the counter and move to the next day
         count++;
         tempDate.setDate(tempDate.getDate() + 1);
     }
 
-    // If no new moon is found, default to the predefined number of days
     return diasDelMes;
-}
+  }
 
   encontrarProximaLunaNueva(fecha: Date): Date {
     let proximaFecha = new Date(fecha);
@@ -498,49 +483,41 @@ calcularDiasEnMes(fecha: Date, mesIndex: number): number {
     return fase === 'Luna Nueva';
   }
 
-calcularFaseLunar(fecha: Date): { 
-  faseTexto: string; 
-  faseEmoji: string; 
-  posicion: string; 
-} {
-  // Calculate days since the start date
-  const diasDesdeInicio = Math.floor(
-    (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
+  calcularFaseLunar(fecha: Date): { 
+    faseTexto: string; 
+    faseEmoji: string; 
+    posicion: string; 
+  } {
+    const diasDesdeInicio = Math.floor(
+      (fecha.getTime() - this.startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const fase = (diasDesdeInicio % this.cicloLunar) / this.cicloLunar;
 
-  // Calculate the moon phase
-  let faseTexto = '';
-  let faseEmoji = '';
-  if (fase < 0.03 || fase > 0.97) {
-    faseTexto = 'Luna Nueva';
-    faseEmoji = '🌑';
-  } else if (fase < 0.22) {
-    faseTexto = 'Creciente';
-    faseEmoji = '🌒';
-  } else if (fase < 0.28) {
-    faseTexto = 'Cuarto Creciente';
-    faseEmoji = '🌓';
-  } else if (fase < 0.47) {
-    faseTexto = 'Gibosa Creciente';
-    faseEmoji = '🌔';
-  } else if (fase < 0.53) {
-    faseTexto = 'Luna Llena';
-    faseEmoji = '🌕';
-  } else if (fase < 0.72) {
-    faseTexto = 'Gibosa Menguante';
-    faseEmoji = '🌖';
-  } else if (fase < 0.78) {
-    faseTexto = 'Cuarto Menguante';
-    faseEmoji = '🌗';
-  } else {
-    faseTexto = 'Menguante';
-    faseEmoji = '🌘';
+    let faseTexto = '';
+    let faseEmoji = '';
+    if (fase < 0.03 || fase > 0.97) {
+      faseTexto = 'Luna Nueva';
+      faseEmoji = '🌑';
+    } else if (fase < 0.22) {
+      faseTexto = 'Creciente';
+      faseEmoji = '🌒';
+    } else if (fase < 0.28) {
+      faseTexto = 'Cuarto Creciente';
+      faseEmoji = '🌓';
+    } else if (fase < 0.47) {
+      faseTexto = 'Gibosa Creciente';
+      faseEmoji = '🌔';
+    } else if (fase < 0.53) {
+      faseTexto = 'Luna Llena';
+      faseEmoji = '🌕';
+    } else {
+      faseTexto = 'Menguante';
+      faseEmoji = '🌘';
+    }
+
+    const declinacion = Math.sin((diasDesdeInicio / this.cicloLunar) * 2 * Math.PI);
+    const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
+
+    return { faseTexto, faseEmoji, posicion };
   }
-
-  // Calculate if the moon is ascending or descending
-  const declinacion = Math.sin((diasDesdeInicio / this.cicloLunar) * 2 * Math.PI);
-  const posicion = declinacion > 0 ? 'Ascendente ⬆️' : 'Descendente ⬇️';
-
-  return { faseTexto, faseEmoji, posicion };
 }
